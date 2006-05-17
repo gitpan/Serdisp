@@ -17,14 +17,15 @@ ok($d->height() eq '64');
 $d->clear();
 
 my $image = GD::Image->new(128,64);
-my $white = $image->colorAllocate(255,0,255);
 my $black = $image->colorAllocate(0,0,0);
+my $white = $image->colorAllocate(255,255,255);
 
-$image->transparent($white);
-$image->arc(10,10,10,10,0,270, $black);
+$image->transparent($black);
+$image->arc(10,10,10,10,0,270, $white);
 $d->copyGD($image);
 
 sleep(5);
 
 undef $d;
+
 

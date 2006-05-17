@@ -1,5 +1,9 @@
 Revision history for Perl extension Serdisp.
 
+0.02  Wed May 17 14:29:17 2006
+	- changed: all non-black pixels will be set in the display
+   - added: docs
+
 0.01  Wed Apr 19 19:54:17 2006
 	- original version; created by h2xs 1.23 with options
 		-A -n Serdisp

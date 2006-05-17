@@ -16,16 +16,16 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(
-	
+
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
-	
+
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 require XSLoader;
 XSLoader::load('Serdisp', $VERSION);
@@ -38,49 +38,100 @@ __END__
 
 =head1 NAME
 
-Serdisp - Perl extension for blah blah blah
+Serdisp - Perl extension for talking to the serdisplib
 
 =head1 SYNOPSIS
 
-  use Serdisp;
-  blah blah blah
+    use Serdisp;
+
+    my $d = Serdisp->new('USB:7c0/1501', 'ctinclud');
+    $d->init();
+    $d->clear();
+
+    # reserves a color-indexed picture
+    my $image = GD::Image->new(128,64);
+    my $black = $image->colorAllocate(0,0,0);
+    my $white = $image->colorAllocate(255,255,255);
+
+    $image->transparent($black);
+    $image->arc(10,10,10,10,0,270, $white);
+    $d->copyGD($image);
 
 =head1 DESCRIPTION
 
-Stub documentation for Serdisp, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+This library is a quick interface to serdisplib.
 
-Blah blah blah.
+=head1 PUBLIC INTERFACE
+
+=over 4
+
+=item C<$d = Serdisp-E<gt>new(connection,displaytype)>
+
+This will open the serdisp library for you. The first string
+is some kind of connector that describes the kind of interface
+your are using to talk to your display:
+
+Examples:
+
+   /dev/parport0 - parallel port
+   0x378 - direct IO
+   USB:7c0/1501 - USB device with the given product id
+   ...
+
+The second is the type of the display.
+
+Examples:
+
+   ctinclud
+   PCD8544
+   ...
+
+=cut
+
+=item C<$d-E<gt>init()>
+
+This will init the display and turn it on. The the display can't
+found with your specified parameter the method will croak.
+
+=item C<$d-E<gt>width()>
+
+Returns the width of the display in pixel.
+
+=item C<$d-E<gt>copyGD(GD)>
+
+This will copy your given GD object into the buffer of the serdisp library.
+After that the display will be updated to display the content of the internal
+buffer. All non-black pixels (red >0 || green > 0 || blue > 0) will be translated
+to a set pixel on the display.
+No dithering at all!
+
+If you GD area is bigger than your display the rest of the GD area will be ignored.
+
+If you GD area is lesser than your display the rest of the display area will be untouched.
+
+=item C<$d-E<gt>clear()>
+
+Will clear the internal buffer of the serdisp library and force an update
+of the display.
 
 =head2 EXPORT
 
 None by default.
 
-
-
 =head1 SEE ALSO
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
+GD
 
 =head1 AUTHOR
 
-A. U. Thor, E<lt>fuzz@int.iquer.netE<gt>
+Erik Wasser, E<lt>erik.wasser@iquer.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by A. U. Thor
+Copyright (C) 2006 by Erik Wasser
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.7 or,
 at your option, any later version of Perl 5 you may have available.
-
 
 =cut
